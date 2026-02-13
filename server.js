@@ -7,6 +7,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
 
+// Configuración de la base de datos con SSL para Clever Cloud
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -18,61 +19,71 @@ const db = mysql.createConnection({
 
 db.connect((err) => {
     if (err) return console.error('❌ Error BD:', err.message);
-    console.log('✅ Conectado a Clever Cloud');
+    console.log('✅ Conectado a Clever Cloud y listo para usar roles');
 });
 
-// --- 🔑 LISTA BLANCA (IMPORTANTE: Pon tus usuarios aquí) ---
-// Revisa que el nombre esté escrito EXACTAMENTE igual que en la base de datos
-const ADMINS_PERMITIDOS = ['victor14', 'victor10']; 
-
+// --- 📝 REGISTRO DE USUARIOS ---
 app.post('/api/registrar', (req, res) => {
     const { usuario, password } = req.body;
-    const query = 'INSERT INTO usuarios (usuario, password) VALUES (?, ?)';
-    db.query(query, [usuario, password], (err) => {
-        if (err) return res.status(500).json({ message: "Error al guardar" });
-        res.json({ message: "¡Usuario registrado!" });
+    // Por defecto, los nuevos registrados tienen rol 'usuario'
+    const query = 'INSERT INTO usuarios (usuario, password, rol) VALUES (?, ?, "usuario")';
+    db.execute(query, [usuario, password], (err) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: "Error al guardar el usuario" });
+        }
+        res.json({ message: "¡Usuario registrado correctamente!" });
     });
 });
 
+// --- 🔑 LOGIN CON PROTECCIÓN Y ROLES ---
 app.post('/api/login', (req, res) => {
     const { usuario, password } = req.body;
     
-    console.log(`Intentando entrar con: ${usuario}`); // Esto saldrá en los logs de Render
+    console.log(`Intentando entrar con: ${usuario}`);
 
-    // 1. Verificación de Lista Blanca
-    if (!ADMINS_PERMITIDOS.includes(usuario)) {
-        console.log(`🚫 Bloqueado: ${usuario} no está en la lista blanca.`);
-        return res.status(403).json({ 
-            success: false, 
-            message: "Acceso denegado: Usuario no autorizado como administrador." 
-        });
-    }
-
-    // 2. Verificación de Credenciales
+    // Usamos db.execute (Sentencia Preparada) para neutralizar inyecciones SQL
     const query = 'SELECT * FROM usuarios WHERE usuario = ? AND password = ?';
-    db.query(query, [usuario, password], (err, results) => {
-        if (err) return res.status(500).json({ message: "Error en la consulta" });
+    
+    db.execute(query, [usuario, password], (err, results) => {
+        if (err) {
+            console.error('Error en login:', err);
+            return res.status(500).json({ success: false, message: "Error interno del servidor" });
+        }
         
         if (results.length > 0) {
-            console.log(`✅ Acceso concedido para: ${usuario}`);
-            res.json({ success: true, message: "¡Bienvenido Admin!" });
+            const user = results[0];
+
+            // Verificamos el rol directamente desde la base de datos
+            if (user.rol === 'admin') {
+                console.log(`✅ Acceso concedido como ADMIN: ${usuario}`);
+                res.json({ 
+                    success: true, 
+                    message: "¡Bienvenido Administrador!",
+                    user: { usuario: user.usuario, rol: user.rol }
+                });
+            } else {
+                console.log(`⚠️ Usuario sin permisos: ${usuario}`);
+                // Respondemos con 403 (Prohibido) para usuarios que no son admin
+                res.status(403).json({ 
+                    success: false, 
+                    message: "Acceso denegado: Se requieren permisos de administrador." 
+                });
+            }
         } else {
-            console.log(`❌ Contraseña incorrecta para: ${usuario}`);
-            res.status(401).json({ success: false, message: "Contraseña incorrecta." });
+            console.log(`❌ Credenciales incorrectas para: ${usuario}`);
+            res.status(401).json({ success: false, message: "Usuario o contraseña incorrectos." });
         }
     });
 });
 
+// --- 👥 OBTENER LISTA DE USUARIOS ---
 app.get('/api/usuarios', (req, res) => {
-    db.query('SELECT id, usuario FROM usuarios', (err, results) => {
-        if (err) return res.status(500).json(err);
+    db.query('SELECT id, usuario, rol FROM usuarios', (err, results) => {
+        if (err) return res.status(500).json({ error: "Error al obtener usuarios" });
         res.json(results);
     });
 });
 
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log(`🚀 Servidor listo`));
-
-
-
-
+app.listen(PORT, () => console.log(`🚀 Servidor corriendo en puerto ${PORT}`));
