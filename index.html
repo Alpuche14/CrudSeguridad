@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Seguridad MySQL</title>
+    <style>
+        :root { --primary: #007bff; --success: #28a745; --danger: #dc3545; --warning: #ffc107; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; display: flex; flex-direction: column; align-items: center; padding: 40px; }
+        
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 450px; margin-bottom: 20px; transition: 0.3s; }
+        .hidden { display: none !important; }
+        
+        h2 { margin-top: 0; color: #333; text-align: center; }
+        input { width: 94%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+        button { width: 100%; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.2s; }
+        
+        .btn-reg { background: var(--success); color: white; }
+        .btn-log { background: var(--primary); color: white; }
+        .btn-reg:hover { background: #218838; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+        th, td { border: 1px solid #eee; padding: 12px; text-align: left; }
+        th { background: #f8f9fa; color: #666; }
+        
+        .edit-input { width: 80%; padding: 5px; border: 1px solid var(--primary); border-radius: 4px; }
+        .btn-mod { background: var(--warning); color: #000; margin-bottom: 4px; padding: 5px; width: auto; font-size: 12px; }
+        .btn-del { background: var(--danger); color: white; padding: 5px; width: auto; font-size: 12px; }
+        
+        .hint { font-size: 12px; color: #888; text-align: center; margin-bottom: 10px; }
+        a { color: var(--primary); text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div id="section-register" class="card">
+        <h2>Crear Cuenta</h2>
+        <p class="hint">Solo letras y números (4-15 caracteres)</p>
+        <form id="reg-form">
+            <input type="text" id="reg-user" placeholder="Usuario" required>
+            <input type="password" id="reg-pass" placeholder="Contraseña" required>
+            <button type="submit" class="btn-reg">Registrar Acceso</button>
+        </form>
+        <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+        <p style="text-align: center; font-size: 14px;">
+            ¿Eres administrador? <a href="#" id="go-login">Entrar aquí</a>
+        </p>
+    </div>
+
+    <div id="section-login" class="card hidden">
+        <h2>Acceso Administrativo</h2>
+        <form id="login-form">
+            <input type="text" id="admin-user" placeholder="Usuario Admin" required>
+            <input type="password" id="admin-pass" placeholder="Clave Admin" required>
+            <button type="submit" class="btn-log">Validar y Ver Tabla</button>
+        </form>
+        <button onclick="location.reload()" style="background:none; color:gray; margin-top:10px;">Volver</button>
+    </div>
+
+    <div id="section-admin" class="card hidden" style="max-width: 800px;">
+        <h2>Gestión de Usuarios (MySQL)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Password</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+        </table>
+        <button onclick="location.reload()" style="margin-top:20px; background:#6c757d; color:white;">Cerrar Sesión</button>
+    </div>
+
+    <script src="crud.js"></script>
+</body>
+</html>
