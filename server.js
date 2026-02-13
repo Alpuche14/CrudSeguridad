@@ -5,6 +5,7 @@ const cors = require('cors');
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(express.static(__dirname));
 
 // 1. CONFIGURACIÓN DE LA CONEXIÓN (Usa variables de entorno de Render)
 const db = mysql.createConnection({
@@ -79,4 +80,5 @@ app.put('/api/usuarios/:id', (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Servidor en línea en puerto ${PORT}`);
+
 });
