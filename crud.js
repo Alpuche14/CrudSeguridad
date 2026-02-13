@@ -11,7 +11,7 @@ document.getElementById('go-login').addEventListener('click', (e) => {
     secLog.classList.remove('hidden');
 });
 
-// Registro
+// Función de Registro
 document.getElementById('reg-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const usuario = document.getElementById('reg-user').value;
@@ -31,7 +31,7 @@ document.getElementById('reg-form').addEventListener('submit', async (e) => {
     }
 });
 
-// Login Admin (Corregido para evitar el error null)
+// Función de Login (Admin)
 const logForm = document.getElementById('log-form');
 if (logForm) {
     logForm.addEventListener('submit', async (e) => {
@@ -48,14 +48,15 @@ if (logForm) {
             const data = await res.json();
 
             if (data.success) {
+                alert(data.message);
                 secLog.classList.add('hidden');
                 secAdm.classList.remove('hidden');
                 cargarTabla();
             } else {
-                alert(data.message);
+                alert(data.message); // Mostrará "Acceso denegado" si no es admin
             }
         } catch (err) {
-            alert("Error en login");
+            alert("Error en el servidor");
         }
     });
 }
@@ -64,5 +65,10 @@ async function cargarTabla() {
     const res = await fetch(`${API_URL}/usuarios`);
     const users = await res.json();
     const table = document.getElementById('user-table');
-    table.innerHTML = users.map(u => `<tr><td>${u.id}</td><td>${u.usuario}</td></tr>`).join('');
+    table.innerHTML = users.map(u => `
+        <tr>
+            <td>${u.id}</td>
+            <td>${u.usuario}</td>
+        </tr>
+    `).join('');
 }
