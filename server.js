@@ -22,7 +22,7 @@ db.connect((err) => {
 
 // --- 🔑 LISTA BLANCA (IMPORTANTE: Pon tus usuarios aquí) ---
 // Revisa que el nombre esté escrito EXACTAMENTE igual que en la base de datos
-const ADMINS_PERMITIDOS = ['admin', 'Jose123', 'TuUsuarioReal']; 
+const ADMINS_PERMITIDOS = ['victor14', 'Cachoman14', 'TuUsuarioReal']; 
 
 app.post('/api/registrar', (req, res) => {
     const { usuario, password } = req.body;
@@ -71,3 +71,4 @@ app.get('/api/usuarios', (req, res) => {
 
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => console.log(`🚀 Servidor listo`));
+
