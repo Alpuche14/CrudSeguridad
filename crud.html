@@ -2,37 +2,42 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Sistema de Seguridad</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Control de Acceso</title>
+    <style>
+        .hidden { display: none; }
+        body { font-family: sans-serif; padding: 20px; }
+        form { margin-bottom: 20px; }
+        input { display: block; margin: 10px 0; padding: 8px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    </style>
 </head>
 <body>
+
     <div id="section-register">
-        <h2>Crear Cuenta</h2>
+        <h2>Registro de Usuarios</h2>
         <form id="reg-form">
-            <input type="text" id="reg-user" placeholder="Usuario" required>
-            <input type="password" id="reg-pass" placeholder="Contraseña" required>
-            <button type="submit">Registrar Acceso</button>
+            <input type="text" id="reg-user" placeholder="Nuevo Usuario" required>
+            <input type="password" id="reg-pass" placeholder="Nueva Contraseña" required>
+            <button type="submit">Registrar</button>
         </form>
-        <p>¿Eres administrador? <a href="#" id="go-login">Entrar aquí</a></p>
+        <p>¿Eres admin? <a href="#" id="go-login">Entrar aquí</a></p>
     </div>
 
     <div id="section-login" class="hidden">
-        <h2>Ingreso Admin</h2>
+        <h2>Login Administrativo</h2>
         <form id="log-form">
-            <input type="text" id="log-user" placeholder="Usuario admin" required>
-            <input type="password" id="log-pass" placeholder="Contraseña" required>
-            <button type="submit">Entrar al Panel</button>
+            <input type="text" id="log-user" placeholder="Usuario Admin" required>
+            <input type="password" id="log-pass" placeholder="Contraseña Admin" required>
+            <button type="submit">Acceder</button>
         </form>
     </div>
 
     <div id="section-admin" class="hidden">
-        <h2>Panel de Usuarios</h2>
+        <h2>Panel de Control - Lista de Usuarios</h2>
         <table>
             <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Usuario</th>
-                </tr>
+                <tr><th>ID</th><th>Nombre de Usuario</th></tr>
             </thead>
             <tbody id="user-table"></tbody>
         </table>
