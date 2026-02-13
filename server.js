@@ -20,38 +20,43 @@ db.connect((err) => {
     console.log('✅ Conectado a Clever Cloud');
 });
 
-// --- 🔑 LISTA BLANCA DE ADMINISTRADORES ---
-// Solo estos usuarios podrán entrar como admin
-const ADMINS_PERMITIDOS = ['tu_usuario_1', 'tu_usuario_2', 'admin']; 
+// --- 🔑 LISTA BLANCA (IMPORTANTE: Pon tus usuarios aquí) ---
+// Revisa que el nombre esté escrito EXACTAMENTE igual que en la base de datos
+const ADMINS_PERMITIDOS = ['admin', 'Jose123', 'TuUsuarioReal']; 
 
-// REGISTRO (Cualquiera puede registrarse, pero no todos son admin)
 app.post('/api/registrar', (req, res) => {
     const { usuario, password } = req.body;
     const query = 'INSERT INTO usuarios (usuario, password) VALUES (?, ?)';
     db.query(query, [usuario, password], (err) => {
         if (err) return res.status(500).json({ message: "Error al guardar" });
-        res.json({ message: "¡Usuario registrado correctamente!" });
+        res.json({ message: "¡Usuario registrado!" });
     });
 });
 
-// LOGIN CON FILTRO DE SEGURIDAD
 app.post('/api/login', (req, res) => {
     const { usuario, password } = req.body;
+    
+    console.log(`Intentando entrar con: ${usuario}`); // Esto saldrá en los logs de Render
 
-    // Bloqueo si no está en la lista de confianza
+    // 1. Verificación de Lista Blanca
     if (!ADMINS_PERMITIDOS.includes(usuario)) {
+        console.log(`🚫 Bloqueado: ${usuario} no está en la lista blanca.`);
         return res.status(403).json({ 
             success: false, 
-            message: "Acceso denegado: No tienes permisos de administrador." 
+            message: "Acceso denegado: Usuario no autorizado como administrador." 
         });
     }
 
+    // 2. Verificación de Credenciales
     const query = 'SELECT * FROM usuarios WHERE usuario = ? AND password = ?';
     db.query(query, [usuario, password], (err, results) => {
-        if (err) return res.status(500).json({ message: "Error" });
+        if (err) return res.status(500).json({ message: "Error en la consulta" });
+        
         if (results.length > 0) {
-            res.json({ success: true, message: "Acceso concedido. ¡Bienvenido!" });
+            console.log(`✅ Acceso concedido para: ${usuario}`);
+            res.json({ success: true, message: "¡Bienvenido Admin!" });
         } else {
+            console.log(`❌ Contraseña incorrecta para: ${usuario}`);
             res.status(401).json({ success: false, message: "Contraseña incorrecta." });
         }
     });
@@ -65,4 +70,4 @@ app.get('/api/usuarios', (req, res) => {
 });
 
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log(`🚀 Corriendo en puerto ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Servidor listo`));
