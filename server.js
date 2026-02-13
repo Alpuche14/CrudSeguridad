@@ -1,7 +1,6 @@
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
-require('dotenv').config();
 
 const app = express();
 
@@ -27,7 +26,7 @@ db.connect((err) => {
     console.log('✅ Conectado exitosamente a Clever Cloud');
 });
 
-// --- RUTA: REGISTRAR (CORREGIDA) ---
+// --- RUTA: REGISTRAR ---
 app.post('/api/registrar', (req, res) => {
     const { usuario, password } = req.body;
 
@@ -39,7 +38,6 @@ app.post('/api/registrar', (req, res) => {
     db.query(query, [usuario, password], (err, result) => {
         if (err) {
             console.error("❌ Error en INSERT:", err);
-            // AQUÍ ESTABA EL ERROR: debe ser res.status, no req.status
             return res.status(500).json({ message: "Error al guardar" });
         }
         res.json({ message: "¡Usuario registrado con éxito!" });
@@ -56,5 +54,5 @@ app.get('/api/usuarios', (req, res) => {
 
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
-    console.log(`🚀 Servidor en puerto ${PORT}`);
+    console.log(`🚀 Servidor activo en puerto ${PORT}`);
 });
