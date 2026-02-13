@@ -12,7 +12,8 @@ const db = mysql.createConnection({
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    port: 3306
+    port: 3306,
+    ssl: { rejectUnauthorized: false }
 });
 
 db.connect((err) => {
@@ -71,6 +72,7 @@ app.get('/api/usuarios', (req, res) => {
 
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => console.log(`🚀 Servidor listo`));
+
 
 
 
