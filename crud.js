@@ -1,3 +1,4 @@
+const API_URL = "https://crudseguridad.onrender.com/api";
 // Referencias de Elementos
 const secReg = document.getElementById('section-register');
 const secLog = document.getElementById('section-login');
@@ -101,4 +102,5 @@ window.modificar = async (id) => {
     });
     alert("Usuario actualizado en MySQL");
     cargarTablaAdmin();
+
 };
